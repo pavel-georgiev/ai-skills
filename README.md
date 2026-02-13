@@ -5,11 +5,7 @@ Packaged skills exported from local Cursor and Claude sources for Codex installa
 ## Included
 
 ### Cursor-origin skills
-- `create-rule`
-- `create-skill`
 - `create-subagent`
-- `migrate-to-skills`
-- `update-cursor-settings`
 
 ### Claude command-derived skills
 - `commit-and-mr`
