@@ -22,15 +22,25 @@ Before asking questions, explore the codebase to understand:
 
 Use Glob, Grep, and Read tools to investigate. Document your findings.
 
-## Step 3: Interview
+## Step 3: Interview (Required)
 
-Use the AskUserQuestion tool to gather requirements. Focus on:
+Interview the user before writing the spec.
+
+- Use a structured question tool when available:
+  - Codex Plan mode: `request_user_input`
+  - Claude Code: `AskUserQuestion`
+- In regular/default mode (or if no question tool is available), ask questions directly in chat and wait for answers.
+- Do not skip the interview just because a specific tool is unavailable.
+- For new users or first-pass requests, ask at least 2 questions unless requirements are already explicit and complete.
+
+Focus on unresolved items from codebase exploration:
 - **Architecture**: How should this integrate with existing systems?
 - **Mechanism**: What's the core mechanism/approach for this change?
 - **Scope**: What's in scope vs out of scope?
 - **Constraints**: Performance, security, compatibility requirements?
 
-Only ask questions you couldn't answer from the codebase exploration. Be concise and specific.
+Only ask questions you couldn't answer from codebase exploration. Be concise and specific.
+If you proceed with assumptions, list them explicitly in the spec.
 
 ## Step 4: Write Spec
 

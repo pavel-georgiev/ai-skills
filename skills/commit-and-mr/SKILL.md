@@ -23,15 +23,31 @@ Commit and create a GitLab MR workflow:
 5. Push the branch: `git push -u origin HEAD`
    - If push fails due to SSH/permission issues, retry with sandbox disabled
 6. Check if MR already exists: `glab mr list --source-branch $(git branch --show-current)`
-7. Create or update the MR using glab with a HEREDOC body that includes:
+7. Detect an optional Jira ticket ID from the branch name:
+   - Read branch name: `BRANCH_NAME=$(git branch --show-current)`
+   - Extract first Jira-style token: `JIRA_ID=$(echo "$BRANCH_NAME" | grep -oE '[A-Z][A-Z0-9]+-[0-9]+' | head -n1)`
+   - If `JIRA_ID` is present, prepend the MR description with `JIRA_ID: <MR title>`
+   - If no Jira token is found, keep the current MR description format unchanged
+8. Create or update the MR using glab with a HEREDOC body that includes:
+   - Optional Jira prefix line in the format `JIRA_ID: <MR title>` when Jira is detected
    - Summary section with bullet points describing the changes
    - Test plan section
    - AI Tool Assistance Usage Statement (always include all checkboxes selected)
 
 Example glab create command:
 ```
-glab mr create --target-branch main --title "Title here" --description "$(cat <<'EOF'
-## Summary
+BRANCH_NAME="$(git branch --show-current)"
+JIRA_ID="$(echo "$BRANCH_NAME" | grep -oE '[A-Z][A-Z0-9]+-[0-9]+' | head -n1)"
+MR_TITLE="Title here"
+JIRA_PREFIX=""
+if [ -n "$JIRA_ID" ]; then
+  JIRA_PREFIX="${JIRA_ID}: ${MR_TITLE}
+
+"
+fi
+
+glab mr create --target-branch main --title "$MR_TITLE" --description "$(cat <<EOF
+${JIRA_PREFIX}## Summary
 - Change 1
 - Change 2
 
@@ -51,10 +67,21 @@ EOF
 
 Example glab update command (if MR exists):
 ```
-glab mr update <MR_NUMBER> --title "New title" --description "$(cat <<'EOF'
+BRANCH_NAME="$(git branch --show-current)"
+JIRA_ID="$(echo "$BRANCH_NAME" | grep -oE '[A-Z][A-Z0-9]+-[0-9]+' | head -n1)"
+MR_TITLE="New title"
+JIRA_PREFIX=""
+if [ -n "$JIRA_ID" ]; then
+  JIRA_PREFIX="${JIRA_ID}: ${MR_TITLE}
+
+"
+fi
+
+glab mr update <MR_NUMBER> --title "$MR_TITLE" --description "$(cat <<EOF
+${JIRA_PREFIX}## Summary
 ...description...
 EOF
 )"
 ```
 
-8. Return the MR URL to the user
+9. Return the MR URL to the user
