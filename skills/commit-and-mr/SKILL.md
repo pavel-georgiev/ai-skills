@@ -26,10 +26,9 @@ Commit and create a GitLab MR workflow:
 7. Detect an optional Jira ticket ID from the branch name:
    - Read branch name: `BRANCH_NAME=$(git branch --show-current)`
    - Extract first Jira-style token: `JIRA_ID=$(echo "$BRANCH_NAME" | grep -oE '[A-Z][A-Z0-9]+-[0-9]+' | head -n1)`
-   - If `JIRA_ID` is present, prepend the MR description with `JIRA_ID: <MR title>`
-   - If no Jira token is found, keep the current MR description format unchanged
+   - If `JIRA_ID` is present, prepend the MR title with `JIRA_ID: <MR title>`
+   - If no Jira token is found, keep the current MR title format unchanged
 8. Create or update the MR using glab with a HEREDOC body that includes:
-   - Optional Jira prefix line in the format `JIRA_ID: <MR title>` when Jira is detected
    - Summary section with bullet points describing the changes
    - Test plan section
    - AI Tool Assistance Usage Statement (always include all checkboxes selected)
@@ -38,16 +37,14 @@ Example glab create command:
 ```
 BRANCH_NAME="$(git branch --show-current)"
 JIRA_ID="$(echo "$BRANCH_NAME" | grep -oE '[A-Z][A-Z0-9]+-[0-9]+' | head -n1)"
-MR_TITLE="Title here"
-JIRA_PREFIX=""
+MR_BASE_TITLE="Title here"
+MR_TITLE="$MR_BASE_TITLE"
 if [ -n "$JIRA_ID" ]; then
-  JIRA_PREFIX="${JIRA_ID}: ${MR_TITLE}
-
-"
+  MR_TITLE="${JIRA_ID}: ${MR_BASE_TITLE}"
 fi
 
 glab mr create --target-branch main --title "$MR_TITLE" --description "$(cat <<EOF
-${JIRA_PREFIX}## Summary
+## Summary
 - Change 1
 - Change 2
 
@@ -69,16 +66,14 @@ Example glab update command (if MR exists):
 ```
 BRANCH_NAME="$(git branch --show-current)"
 JIRA_ID="$(echo "$BRANCH_NAME" | grep -oE '[A-Z][A-Z0-9]+-[0-9]+' | head -n1)"
-MR_TITLE="New title"
-JIRA_PREFIX=""
+MR_BASE_TITLE="New title"
+MR_TITLE="$MR_BASE_TITLE"
 if [ -n "$JIRA_ID" ]; then
-  JIRA_PREFIX="${JIRA_ID}: ${MR_TITLE}
-
-"
+  MR_TITLE="${JIRA_ID}: ${MR_BASE_TITLE}"
 fi
 
 glab mr update <MR_NUMBER> --title "$MR_TITLE" --description "$(cat <<EOF
-${JIRA_PREFIX}## Summary
+## Summary
 ...description...
 EOF
 )"
