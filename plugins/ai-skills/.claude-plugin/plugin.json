@@ -1,0 +1,5 @@
+{
+  "name": "ai-skills",
+  "description": "Custom workflow commands for specs, MRs, code review, and daily status",
+  "version": "1.0.0"
+}
