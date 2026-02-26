@@ -14,25 +14,31 @@ Claude Code plugin with custom workflow skills.
 - `verify` - Verify spec implementation completeness
 - `create-subagent` - Create custom subagents for Cursor
 
-## Install in Claude Code from GitHub
+## Install in Claude Code
 
-Add this repo as a custom marketplace in `~/.claude/settings.json`:
+1. Add this repo as a custom marketplace in `~/.claude/settings.json`:
 
 ```json
 {
-  "extraKnownMarketplaces": [
-    {
-      "name": "ai-skills",
+  "extraKnownMarketplaces": {
+    "ai-skills": {
       "source": {
         "source": "github",
-        "repo": "<owner>/ai-skills"
+        "repo": "pavel-georgiev/ai-skills"
       }
     }
-  ]
+  }
 }
 ```
 
-Then install the plugin:
+2. Sync marketplaces to fetch the repo:
+
+```
+/plugin marketplace sync
+```
+
+3. Install the plugin:
+
 ```
 /plugin install ai-skills@ai-skills
 ```
