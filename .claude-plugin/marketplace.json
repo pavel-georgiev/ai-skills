@@ -1,7 +1,6 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "ai-skills",
-  "version": "1.0.1",
   "description": "Custom workflow commands for specs, MRs, code review, and daily status",
   "owner": {
     "name": "Pavel Georgiev"
@@ -10,7 +9,6 @@
     {
       "name": "ai-skills",
       "description": "Custom workflow commands for specs, MRs, code review, and daily status",
-      "version": "1.0.1",
       "source": "./plugins/ai-skills",
       "category": "productivity"
     }
