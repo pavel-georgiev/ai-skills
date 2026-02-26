@@ -4,7 +4,7 @@ description: Push branch, create GitLab merge request with auto-merge and delete
 ---
 
 
-Create a GitLab MR workflow. All git and glab commands MUST use `dangerouslyDisableSandbox: true` since they require network and SSH access.
+Create a GitLab MR workflow. All git, glab, and curl commands MUST use `dangerouslyDisableSandbox: true` since they require network and SSH access.
 
 **Important**: If any `git` or `glab` commands fail due to sandbox restrictions (e.g., SSH permission denied, network errors), retry the command with `dangerouslyDisableSandbox: true`.
 
