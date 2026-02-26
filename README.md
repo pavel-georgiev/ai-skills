@@ -16,31 +16,20 @@ Claude Code plugin with custom workflow skills.
 
 ## Install in Claude Code
 
-1. Add this repo as a custom marketplace in `~/.claude/settings.json`:
+1. Add the marketplace:
 
-```json
-{
-  "extraKnownMarketplaces": {
-    "ai-skills": {
-      "source": {
-        "source": "github",
-        "repo": "pavel-georgiev/ai-skills"
-      }
-    }
-  }
-}
+```bash
+claude plugin marketplace add pavel-georgiev/ai-skills
 ```
 
-2. Sync marketplaces to fetch the repo:
+2. Install the plugin:
 
-```
-/plugin marketplace sync
-```
-
-3. Install the plugin:
-
-```
-/plugin install ai-skills@ai-skills
+```bash
+claude plugin install ai-skills@ai-skills
 ```
 
-Updates from the repo will be picked up automatically.
+3. To update to the latest version:
+
+```bash
+claude plugin update ai-skills@ai-skills
+```
