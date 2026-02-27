@@ -74,9 +74,10 @@ EOF
 
 8. Enable auto-merge on the MR using the GitLab API:
    - Extract the MR IID (number) from the create/list output
-   - Call: `glab api --method PUT "projects/:fullpath/merge_requests/<MR_IID>" -f merge_when_pipeline_succeeds=true -f should_remove_source_branch=true`
+   - Call: `glab api --method PUT "projects/:fullpath/merge_requests/<MR_IID>/merge" -f merge_when_pipeline_succeeds=true -f should_remove_source_branch=true`
+   - Note: This uses the **merge endpoint** (`/merge`), not the MR update endpoint. The update endpoint ignores `merge_when_pipeline_succeeds`.
    - Do NOT use `glab mr merge` — it attempts an immediate merge and returns 405 if the pipeline hasn't passed yet
-   - If the API call fails (e.g., no pipeline configured, auto-merge not enabled for the project), inform the user but do not treat it as a fatal error
+   - If the API call fails (e.g., no pipeline configured, auto-merge not enabled for the project, MR not yet approved), inform the user but do not treat it as a fatal error
 9. Return the MR URL to the user
 10. If the environment variable `SLACK_WEBHOOK_URL_MR` is set, post a Slack notification:
     - Check: `echo "$SLACK_WEBHOOK_URL_MR"` — if empty, skip this step silently
