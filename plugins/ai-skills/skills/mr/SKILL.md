@@ -14,18 +14,22 @@ allowed-tools: Bash(git status:*), Bash(git push:*), Bash(git log:*), Bash(git d
 
 ## Your task
 
-Create a GitLab MR for the above changes. All git and glab commands MUST use `dangerouslyDisableSandbox: true` since they require network and SSH access.
+Create a GitLab MR for the above changes.
+
+**Critical permission rule**: Each `git` and `glab` command MUST be its own separate Bash tool call so that permission patterns like `Bash(git push:*)` and `Bash(glab mr create:*)` match correctly. NEVER bundle multiple commands into a single Bash call using `&&`, `;`, variable assignments before the command, or shell scripts. If you need values from a previous command, capture them from the tool output and interpolate them into the next separate Bash call.
+
+**Sandbox rule**: Only use `dangerouslyDisableSandbox: true` for `git push` (requires SSH access). All other commands should run inside the sandbox.
 
 1. If the current branch is main or master, inform the user and stop
-2. Push the branch: `git push -u origin HEAD`
+2. Push the branch with `dangerouslyDisableSandbox: true`: `git push -u origin HEAD`
+   - If diverged (e.g. after squash/rebase), use `git push -u origin HEAD --force-with-lease`
 3. Check if MR already exists: `glab mr list --source-branch <branch>`
-4. Detect an optional Jira ticket ID from the branch name:
-   - Extract first Jira-style token: `echo "$BRANCH" | grep -oE '[A-Z][A-Z0-9]+-[0-9]+' | head -n1`
-   - If found, prepend MR title: `JIRA_ID: <title>`
+4. Extract a Jira ticket ID from the branch name (match pattern `[A-Z][A-Z0-9]+-[0-9]+`). If found, prepend MR title: `JIRA_ID: <title>`
 5. Analyze the commits and diff from the Context section above to draft an MR title and description
-6. Create or update the MR:
-   - If no MR exists: `glab mr create --target-branch main --remove-source-branch --title "..." --description "..."`
-   - If MR exists: `glab mr update <MR_NUMBER> --title "..." --description "..."`
+6. Create or update the MR — the command MUST start with `glab` (no variable assignments before it):
+   - If no MR exists: `glab mr create --target-branch main --remove-source-branch --title "<JIRA_ID: >Title" --description "$(cat <<'EOF' ... EOF)"`
+   - If MR exists: `glab mr update <MR_NUMBER> --title "<JIRA_ID: >Title" --description "$(cat <<'EOF' ... EOF)"`
+   - Inline the Jira ID directly in the title string — do NOT use shell variables
    - Description must use a HEREDOC and include this footer:
 
 ```
@@ -38,25 +42,12 @@ Please select applicable statement out of the following, regarding AI assistance
 - [x] AI assistance was used for optimizing/troubleshooting/refactoring existing code in this change.
 ```
 
-7. Enable auto-merge using the GitLab GraphQL API in a single command:
-
-```bash
-PROJECT_PATH=$(git config --get remote.origin.url | sed 's|.*://[^/]*/||;s|.*:||;s|\.git$||')
-glab api graphql -f query="
-mutation {
-  mergeRequestAccept(input: {
-    projectPath: \"${PROJECT_PATH}\",
-    iid: \"${MR_IID}\",
-    sha: \"${SHA}\",
-    strategy: MERGE_WHEN_CHECKS_PASS,
-    shouldRemoveSourceBranch: true
-  }) {
-    mergeRequest { state autoMergeEnabled }
-    errors
-  }
-}"
-```
-
+7. Enable auto-merge using the GitLab GraphQL API. Run these as **separate** Bash calls:
+   - Get the project path: `git remote get-url origin` — then extract the path by stripping the `.*:` prefix and `.git` suffix
+   - Call the GraphQL mutation (inline all values — no shell variables):
+     ```
+     glab api graphql -f query="mutation { mergeRequestAccept(input: { projectPath: \"<PROJECT_PATH>\", iid: \"<MR_IID>\", sha: \"<SHA>\", strategy: MERGE_WHEN_CHECKS_PASS, shouldRemoveSourceBranch: true }) { mergeRequest { state autoMergeEnabled } errors } }"
+     ```
    - Do NOT use `glab mr merge` — it attempts an immediate merge and returns 405 if the pipeline hasn't passed yet
    - If the API call fails, inform the user but do not treat it as a fatal error
 
@@ -66,4 +57,3 @@ mutation {
 
 - Steps 2-3 can be run as parallel Bash calls (push + MR list check are independent)
 - The Context section above already provides git status, branch, commits, diff, and SHA — do NOT re-run these commands
-- Combine project path extraction + GraphQL into a single Bash call (step 7)
