@@ -27,10 +27,13 @@ Create a GitLab MR for the above changes.
 4. Extract a Jira ticket ID from the branch name (match pattern `[A-Z][A-Z0-9]+-[0-9]+`). If found, prepend MR title: `JIRA_ID: <title>`
 5. Analyze the commits and diff from the Context section above to draft an MR title and description
 6. Create or update the MR — the command MUST start with `glab` (no variable assignments before it):
-   - If no MR exists: `glab mr create --target-branch main --remove-source-branch --title "<JIRA_ID: >Title" --description "$(cat <<'EOF' ... EOF)"`
-   - If MR exists: `glab mr update <MR_NUMBER> --title "<JIRA_ID: >Title" --description "$(cat <<'EOF' ... EOF)"`
+   - If no MR exists: use `glab mr create --target-branch main --remove-source-branch --title "<JIRA_ID: >Title" --description "<multi-line description>"`
+   - If MR exists: use `glab mr update <MR_NUMBER> --title "<JIRA_ID: >Title" --description "<multi-line description>"`
    - Inline the Jira ID directly in the title string — do NOT use shell variables
-   - Description must use a HEREDOC and include this footer:
+   - Pass the description as a single quoted argument on the `glab` command itself, with embedded newlines inside the quoted string
+   - Do NOT use `$(...)`, HEREDOCs, pipes, temp files, or helper commands for the description; they break permission-prefix matching and can trigger avoidable approval prompts
+   - If the description needs a literal double quote, escape it as `\"`
+   - Description must include this footer:
 
 ```
 ---
