@@ -40,9 +40,10 @@ Create a GitLab MR for the above changes.
 
 # AI Tool Assistance Usage Statement
 Please select applicable statement out of the following, regarding AI assistance usage.
-- [x] AI assistance was used to draft parts of the implementation, that was subsequently modified and extended.
-- [x] AI assistance was used in generating tests/documentation/comments for this change.
-- [x] AI assistance was used for optimizing/troubleshooting/refactoring existing code in this change.
+- [x] AI assistance was used to draft this entire change as is.
+- [ ] AI assistance was used to draft parts of the implementation, that was subsequently modified and extended.
+- [ ] AI assistance was used in generating tests/documentation/comments for this change.
+- [ ] AI assistance was used for optimizing/troubleshooting/refactoring existing code in this change.
 ```
 
 7. Enable auto-merge using the GitLab GraphQL API. Run these as **separate** Bash calls:

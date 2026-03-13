@@ -9,7 +9,7 @@
     {
       "name": "ai-skills",
       "description": "Custom workflow commands for specs, MRs, code review, and daily status",
-      "version": "1.2.7",
+      "version": "1.2.8",
       "source": "./plugins/ai-skills",
       "category": "productivity"
     }
