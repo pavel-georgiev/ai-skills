@@ -1,9 +1,10 @@
 # AI skills
 
-Claude Code plugin with custom workflow skills.
+Claude Code plugin with custom workflow skills for commits, specs, MRs, code review, and daily status.
 
 ## Included skills
 
+- `commit` - Review current changes and create a single git commit
 - `mr` - Push branch, create GitLab MR with auto-merge and delete source branch
 - `daily-status` - Generate daily status report from GitLab achievements
 - `implement-spec` - Implement a spec by working through tasks sequentially

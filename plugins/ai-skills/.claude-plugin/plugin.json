@@ -1,4 +1,4 @@
 {
   "name": "ai-skills",
-  "description": "Custom workflow commands for specs, MRs, code review, and daily status"
+  "description": "Custom workflow commands for commits, specs, MRs, code review, and daily status"
 }
