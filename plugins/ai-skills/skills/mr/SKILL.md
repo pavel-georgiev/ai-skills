@@ -8,8 +8,8 @@ allowed-tools: Bash(git status:*), Bash(git push:*), Bash(git log:*), Bash(git d
 
 - Current git status: !`git status`
 - Current branch: !`git branch --show-current`
-- Recent commits from main: !`git log --oneline main..HEAD`
-- Changed files summary: !`git diff main...HEAD --stat`
+- Recent commits from target branch: !`git log --oneline origin/main..HEAD`
+- Changed files summary: !`git diff origin/main...HEAD --stat`
 - HEAD SHA: !`git rev-parse HEAD`
 
 ## Your task
@@ -26,6 +26,7 @@ Create a GitLab MR for the above changes.
 3. Check if MR already exists: `glab mr list --source-branch <branch>`
 4. Extract a Jira ticket ID from the branch name (match pattern `[A-Z][A-Z0-9]+-[0-9]+`). If found, prepend MR title: `JIRA_ID: <title>`
 5. Analyze the commits and diff from the Context section above to draft an MR title and description
+   - Treat the remote target branch as the source of truth for this analysis. Do NOT infer MR scope from local `main`, which may be stale relative to `origin/main`
 6. Create or update the MR — the command MUST start with `glab` (no variable assignments before it):
    - If no MR exists: use `glab mr create --target-branch main --remove-source-branch --title "<JIRA_ID: >Title" --description "<multi-line description>"`
    - If MR exists: use `glab mr update <MR_NUMBER> --title "<JIRA_ID: >Title" --description "<multi-line description>"`
@@ -61,3 +62,4 @@ Please select applicable statement out of the following, regarding AI assistance
 
 - Steps 2-3 can be run as parallel Bash calls (push + MR list check are independent)
 - The Context section above already provides git status, branch, commits, diff, and SHA — do NOT re-run these commands
+- The MR scope must be derived from the remote target branch context above, not from local `main`
