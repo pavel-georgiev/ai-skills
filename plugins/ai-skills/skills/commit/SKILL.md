@@ -17,6 +17,10 @@ Based on the above changes, create a single git commit.
 
 Use the current diff as the source of truth for the commit message and stage only the files that belong in this commit.
 
+When writing the commit message:
+- Use a title only for small, obvious changes such as typo fixes or similarly trivial edits
+- Use a title plus a descriptive body for larger, broader, or more complex changes so the intent and scope are clear
+
 **Critical permission rule**: Each git command MUST be its own separate Bash tool call so that permission patterns like `Bash(git add:*)` and `Bash(git commit:*)` match correctly. NEVER bundle multiple commands into a single Bash call using `&&`, `;`, variable assignments before the command, or shell scripts.
 
 1. Review the current changes from the Context section above
