@@ -1,6 +1,6 @@
 ---
 name: mr
-description: Push branch, create GitLab merge request with auto-merge and delete source branch
+description: Push branch, create or update a GitLab merge request, enable auto-merge, and report the final MR state
 allowed-tools: Bash(git status:*), Bash(git push:*), Bash(git log:*), Bash(git diff:*), Bash(git rev-parse:*), Bash(git branch:*), Bash(git config:*), Bash(glab mr:*), Bash(glab api:*), Bash(glab repo:*)
 ---
 
@@ -14,11 +14,17 @@ allowed-tools: Bash(git status:*), Bash(git push:*), Bash(git log:*), Bash(git d
 
 ## Your task
 
-Create a GitLab MR for the above changes.
+Create or update a GitLab MR for the above changes.
 
 **Critical permission rule**: Each `git` and `glab` command MUST be its own separate Bash tool call so that permission patterns like `Bash(git push:*)` and `Bash(glab mr create:*)` match correctly. NEVER bundle multiple commands into a single Bash call using `&&`, `;`, variable assignments before the command, or shell scripts. If you need values from a previous command, capture them from the tool output and interpolate them into the next separate Bash call.
 
 **Sandbox rule**: Only use `dangerouslyDisableSandbox: true` for `git push` (requires SSH access). All other commands should run inside the sandbox.
+
+**Definition of done**: Do not stop after pushing or updating the MR. This task is only complete once:
+- the branch is pushed
+- the MR exists and has the latest title/description
+- auto-merge is enabled, or you have explicitly verified and reported why it could not be enabled
+- your final response includes the MR URL and the final auto-merge status
 
 1. If the current branch is main or master, inform the user and stop
 2. Push the branch with `dangerouslyDisableSandbox: true`: `git push -u origin HEAD`
@@ -56,10 +62,18 @@ Please select applicable statement out of the following, regarding AI assistance
    - Do NOT use `glab mr merge` — it attempts an immediate merge and returns 405 if the pipeline hasn't passed yet
    - If the API call fails, inform the user but do not treat it as a fatal error
 
-8. Return the MR URL to the user
+8. Verify the final MR state after step 7. Run a separate GraphQL query and confirm whether auto-merge is enabled:
+   ```
+   glab api graphql -f query="query { project(fullPath: \"<PROJECT_PATH>\") { mergeRequest(iid: \"<MR_IID>\") { webUrl state autoMergeEnabled } } }"
+   ```
+   - If `autoMergeEnabled` is `false`, explicitly say so in the final response and include the reason if the previous step returned one
+   - Even when the MR already existed before your update, you must still run steps 7 and 8
+
+9. Return the MR URL to the user, and include whether auto-merge is enabled
 
 ## Optimization notes
 
 - Steps 2-3 can be run as parallel Bash calls (push + MR list check are independent)
 - The Context section above already provides git status, branch, commits, diff, and SHA — do NOT re-run these commands
 - The MR scope must be derived from the remote target branch context above, not from local `main`
+- Existing MRs are not a shortcut: after `glab mr update`, you must still enable and verify auto-merge before finishing
